@@ -1,12 +1,26 @@
 import Link from "next/link";
 import styles from "../../styles/Home.module.css";
 import { useRouter } from "next/router";
+import { getBaseUrl } from "../../utils/getBaseUrl";
 
 /*SSG*/
 export async function getStaticProps({params}) {
-    const url = "http://127.0.0.1:3000/"+ params.id +".json";
+    // const url = "http://127.0.0.1:3000/"+ params.id +".json";
+    // const req = await fetch(url);
+    // const data = await req.json();
+
+    // 環境に応じてベースURLを自動切り替え
+    const baseUrl = getBaseUrl();
+    const url = `${baseUrl}/${params.id}.json`;
     const req = await fetch(url);
     const data = await req.json();
+    
+    // ローカルファイルを直接読み込む場合（fetchを使わない方法）
+    // const fs = require('fs');
+    // const path = require('path');
+    // const filePath = path.join(process.cwd(), 'public', `${params.id}.json`);
+    // const fileContents = fs.readFileSync(filePath, 'utf8');
+    // const data = JSON.parse(fileContents);
 
     return {
         props: {
@@ -15,8 +29,21 @@ export async function getStaticProps({params}) {
     };
 }
 export async function getStaticPaths(){
-    const req = await fetch('http://127.0.0.1:3000/myprofile.json');
+    // const req = await fetch('http://127.0.0.1:3000/myprofile.json');
+    // const data = await req.json();
+
+    // 環境に応じてベースURLを自動切り替え
+    const baseUrl = getBaseUrl();
+    const url = `${baseUrl}/myprofile.json`;
+    const req = await fetch(url);
     const data = await req.json();
+    
+    // ローカルファイルを直接読み込む場合（fetchを使わない方法）
+    // const fs = require('fs');
+    // const path = require('path');
+    // const filePath = path.join(process.cwd(), 'public', 'myprofile.json');
+    // const fileContents = fs.readFileSync(filePath, 'utf8');
+    // const data = JSON.parse(fileContents);
 
     const paths = data.map(myprofile => {
         return {
@@ -34,7 +61,6 @@ export async function getStaticPaths(){
 
 const MyProfile = ( {myprofile} ) => {
     const router = useRouter();
-    const { id } = router.query;
     return <div><main  className={styles.main} >
         <h2 className={styles.title}>制作物：{myprofile.name}</h2>
         <p>{myprofile.caption_1}</p> <br/>
